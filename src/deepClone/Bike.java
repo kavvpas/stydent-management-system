@@ -5,36 +5,38 @@ import java.util.StringJoiner;
 
 public class Bike implements Cloneable {
     private String id;
-    private GPS gps; // Object type field (引用类型的属性，克隆的核心战场)
+    private GPS gps; // Nested object reference (嵌套的引用对象)
 
     public Bike(String id, GPS gps) {
         this.id = id;
         this.gps = gps;
     }
 
-    // 1. Shallow Clone Example (浅克隆示例)
-    public Bike shallowClone() throws CloneNotSupportedException {
-        return (Bike) super.clone(); // Just copies primitives and references (只复制基本数据和地址)
+    // 🌟 THE NEW FUNCTION: Update internal GPS location
+    // 🌟 新增的功能：允许修改这台车内部的 GPS 坐标
+    public void updateGpsLocation(String newCoords) {
+        this.gps.coordinates = newCoords;
     }
 
-    // 2. Deep Clone Example (深克隆示例)
+    // 1. Shallow Clone Example (浅克隆：只复制外壳和地址)
+    public Bike shallowClone() throws CloneNotSupportedException {
+        return (Bike) super.clone();
+    }
+
+    // 2. Deep Clone Example (深克隆：外壳和内部硬件彻底独立复制)
     public Bike deepClone() throws CloneNotSupportedException {
-        // Step 1: Clone the bike container first
-        // 第一步：先克隆单车外壳
+        // Step 1: Clone the bike container (先复制外壳)
         Bike clonedBike = (Bike) super.clone();
-
-        // Step 2: Manually clone the internal object!
-        // 第二步：极其重要！手动克隆内部的引用对象，彻底斩断地址关联！
+        // Step 2: Manually clone the nested GPS object (手动复制里面的GPS硬件)
         clonedBike.gps = (GPS) this.gps.clone();
-
         return clonedBike;
     }
 
-    // Using StringJoiner API to build a beautiful output
-    // 串联新API知识点：使用 StringJoiner 拼接高效、美观的日志
+    // Using StringJoiner and Objects API to generate logs
+    // 串联知识点：使用全新的 StringJoiner 拼接精美日志
     public String getBikeLog() {
-        // Objects API: Prevent NullPointerException (串联Objects工具类，防止空指针)
-        Objects.requireNonNull(gps, "GPS device cannot be null! (GPS设备不能为空！)");
+        // Objects tool class: Prevent NullPointerException (空指针保护)
+        Objects.requireNonNull(gps, "GPS device cannot be null!");
 
         StringJoiner sj = new StringJoiner(" | ", "[Bike Log: ", "]");
         sj.add("ID: " + id);

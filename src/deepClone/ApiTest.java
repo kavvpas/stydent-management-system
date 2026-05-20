@@ -1,43 +1,54 @@
 package deepClone;
 
-import java.util.Random;
+import java.util.ArrayList;
 
 public class ApiTest {
     public static void main(String[] args) throws CloneNotSupportedException {
-        // 串联 Random API: 随机生成一个单车编号
-        Random r = new Random();
-        String bikeId = "BK-" + (r.nextInt(9000) + 1000); // 1000~9999
 
-        // Create original bike with a GPS device
-        // 创建一台拥有GPS的原始单车
-        GPS originalGPS = new GPS("35.72, 139.65 (Nerima, Tokyo)");
-        Bike originalBike = new Bike(bikeId, originalGPS);
+        // 1. Initialize prototype bike (初始化一台在练马区的原型单车)
+        GPS normalGPS = new GPS("35.72, 139.65 (Nerima, Tokyo)");
+        Bike prototypeBike = new Bike("PROTOTYPE", normalGPS);
 
-        System.out.println("--- Original Bike Status ---");
-        System.out.println(originalBike.getBikeLog());
+        // 2. Leverage ArrayList API to store our cloned fleets
+        // 串联全新API知识点：用 ArrayList 集合来装我们的单车车队
+        ArrayList<Bike> shallowFleet = new ArrayList<>();
+        ArrayList<Bike> deepFleet = new ArrayList<>();
 
-        // ==========================================
-        // SCENARIO 1: SHALLOW CLONE (浅克隆实验)
-        // ==========================================
-        Bike shallowBike = originalBike.shallowClone();
+        // 3. Batch cloning via loop
+        // 通过循环，用两种方式各克隆 3 台车存入各自的车队
+        for (int i = 1; i <= 3; i++) {
+            shallowFleet.add(prototypeBike.shallowClone());
+            deepFleet.add(prototypeBike.deepClone());
+        }
 
-        // CRITICAL PROOF: Do they share the same GPS memory address?
-        // 核心证明：它们是不是共享同一个GPS的内存地址？
-        System.out.println("\n[Shallow Clone Check]");
-        System.out.println("Same Bike Object? (单车对象是同一个吗？) -> " + (originalBike == shallowBike));
-        System.out.println("Same GPS Object? (GPS对象是同一个吗？) -> " + (originalBike.getGps() == shallowBike.getGps()));
-        // Result is TRUE! If you change shallowBike's GPS, originalBike will ALSO change!
-        // 结果是 true！如果你改了克隆车的GPS，原车的GPS也会跟着变！(这就是浅克隆的隐患)
+        System.out.println("========== EMERGENCY SECURITY TEST (紧急安全测试) ==========");
 
-        // ==========================================
-        // SCENARIO 2: DEEP CLONE (深克隆实验)
-        // ==========================================
-        Bike deepBike = originalBike.deepClone();
+        // =======================================================
+        // SCENARIO 1: SHALLOW CLONE FAILS UNDER ATTACK
+        // 实验一：浅克隆车队遭受劫持 —— 动一车而爆全城
+        // =======================================================
+        System.out.println("\n[Action] Changing GPS for Shallow-Bike 1 to 'HACKED!'...");
+        // 仅仅修改浅克隆车队里第一台车 (Index 0)
+        shallowFleet.get(0).updateGpsLocation("HACKED! (信号劫持!)");
 
-        System.out.println("\n[Deep Clone Check]");
-        System.out.println("Same Bike Object? (单车对象是同一个吗？) -> " + (originalBike == deepBike));
-        System.out.println("Same GPS Object? (GPS对象是同一个吗？) -> " + (originalBike.getGps() == deepBike.getGps()));
-        // Result is FALSE! They are completely independent in memory now!
-        // 结果是 false！它们在内存中彻底独立了！改新车，原车完全不受影响！
+        System.out.println("\n--- Shallow Clone Fleet Status (浅克隆车队现状) ---");
+        for (Bike b : shallowFleet) {
+            System.out.println(b.getBikeLog());
+        }
+
+
+        // =======================================================
+        // SCENARIO 2: DEEP CLONE KEEPS DATA ISOLATED
+        // 实验二：深克隆车队数据隔离 —— 独立修改互不干扰
+        // =======================================================
+        System.out.println("\n------------------------------------------------");
+        System.out.println("[Action] Changing GPS for Deep-Bike 1 to 'Shibuya, Tokyo'...");
+        // 仅仅修改深克隆车队里第一台车 (Index 0)
+        deepFleet.get(0).updateGpsLocation("35.65, 139.70 (Shibuya, Tokyo)");
+
+        System.out.println("\n--- Deep Clone Fleet Status (深克隆车队现状) ---");
+        for (Bike b : deepFleet) {
+            System.out.println(b.getBikeLog());
+        }
     }
 }
