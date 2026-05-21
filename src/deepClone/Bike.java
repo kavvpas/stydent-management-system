@@ -5,43 +5,45 @@ import java.util.StringJoiner;
 
 public class Bike implements Cloneable {
     private String id;
-    private GPS gps; // Nested object reference (嵌套的引用对象)
+    private GPS gps;
+    private Status status; // 👔 New field: Enum status (新增属性：车辆状态枚举)
 
     public Bike(String id, GPS gps) {
         this.id = id;
         this.gps = gps;
+        this.status = Status.AVAILABLE; // Default status is Available (默认待骑行)
     }
 
-    // 🌟 THE NEW FUNCTION: Update internal GPS location
-    // 🌟 新增的功能：允许修改这台车内部的 GPS 坐标
-    public void updateGpsLocation(String newCoords) {
+    // Business Method: Update bike's position and status
+    // 业务方法优化：同时修改GPS坐标和车辆状态
+    public void dispatch(String newCoords, Status newStatus) {
         this.gps.coordinates = newCoords;
+        this.status = newStatus;
     }
 
-    // 1. Shallow Clone Example (浅克隆：只复制外壳和地址)
+    // 1. Shallow Clone (浅克隆)
     public Bike shallowClone() throws CloneNotSupportedException {
         return (Bike) super.clone();
     }
 
-    // 2. Deep Clone Example (深克隆：外壳和内部硬件彻底独立复制)
+    // 2. Deep Clone (深克隆)
     public Bike deepClone() throws CloneNotSupportedException {
-        // Step 1: Clone the bike container (先复制外壳)
         Bike clonedBike = (Bike) super.clone();
-        // Step 2: Manually clone the nested GPS object (手动复制里面的GPS硬件)
-        clonedBike.gps = (GPS) this.gps.clone();
+        clonedBike.gps = (GPS) this.gps.clone(); // Deep copy inside (深度复制内部零件)
         return clonedBike;
     }
 
-    // Using StringJoiner and Objects API to generate logs
-    // 串联知识点：使用全新的 StringJoiner 拼接精美日志
+    // Professional log format using StringJoiner
+    // 工业级日志：完美展现车辆的所有关键元数据
     public String getBikeLog() {
-        // Objects tool class: Prevent NullPointerException (空指针保护)
-        Objects.requireNonNull(gps, "GPS device cannot be null!");
+        Objects.requireNonNull(gps, "GPS device missing!");
+        Objects.requireNonNull(status, "Bike status missing!");
 
-        StringJoiner sj = new StringJoiner(" | ", "[Bike Log: ", "]");
-        sj.add("ID: " + id);
-        sj.add("GPS Loc: " + gps.coordinates);
-        return sj.toString();
+        return new StringJoiner(" | ", "[Bike - ", "]")
+                .add("ID: " + id)
+                .add("Status: " + status.getDescription())
+                .add("GPS: " + gps.coordinates)
+                .toString();
     }
 
     public GPS getGps() { return gps; }
