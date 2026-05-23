@@ -1,6 +1,8 @@
 package deepClone;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ApiTest {
     public static void main(String[] args) throws CloneNotSupportedException {
@@ -57,5 +59,22 @@ public class ApiTest {
         System.out.println("🔵 Active Rides Right Now (骑行中数量): " + inUseCount + " 台");
         System.out.println("🔴 Under Repair Status (维修中数量): " + maintenanceCount + " 台");
         System.out.println("===============================================================");
+
+        String logData = "警报：时间23:15，单车BK-1024在练马区故障，紧急联系电话：13911112222；" +
+                "另一台BK-2048在涩谷故障，联系电话：18855556666。请速处理！";
+
+        // Step 1: 把你的正则暗号，编译成一个“雷达探测器”对象
+        Pattern p = Pattern.compile("1[3-9]\\d{9}");
+
+        // Step 2: 让雷达探测器去扫描整段大文本，生成一个“结果匹配器”
+        Matcher m = p.matcher(logData);
+
+        // Step 3: 开启 while 循环，用 find() 像探照灯一样在文本里扫
+        System.out.println("--- 开始全自动抓取电话号码 ---");
+        while (m.find()) {
+            // m.group() 会把当前探照灯抓到的那串符合条件的文字给你吐出来
+            String phoneNumber = m.group();
+            System.out.println("抓取到紧急联系电话: " + phoneNumber);
+        }
     }
-}new project
+}
