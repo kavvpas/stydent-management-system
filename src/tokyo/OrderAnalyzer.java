@@ -1,4 +1,7 @@
-import com.tokyo.model.DishItem;
+package tokyo;
+
+
+import tokyo.DishItem;
 import java.util.ArrayList;
 import java.util.List;
 
